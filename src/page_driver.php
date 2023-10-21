@@ -4,7 +4,7 @@ include "const.php";
 include "RoutesDB.php";
 
 $pin = intval(filter_input(INPUT_GET, "pin", FILTER_SANITIZE_NUMBER_INT));
-if ($pin === pin) {
+if ($pin === PIN) {
     $_SESSION[SESS_DRIVER] = true;
 }
 

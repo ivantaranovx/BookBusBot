@@ -1,10 +1,8 @@
 <?php
 
-date_default_timezone_set("Europe/Dublin");
+include "./private.php";
 
 session_start();
-
-const pin = 1234441012;
 
 const LANG = "lang_";
 const PAGE = "page_";
@@ -35,17 +33,11 @@ const CTYPE_PNG = "Content-Type: image/png";
 const CTYPE_JSON = "Content-Type: application/json; charset=UTF-8";
 
 const SESS_UID = "uid";
-const TG_API = "https://api.telegram.org/";
-
 const SESS_ROUTE_NAME = "route_name";
 const SESS_BUS_NAME = "bus_name";
 const SESS_TIME = "time";
 const SESS_CHK = "chk";
 const SESS_DRIVER = "driver";
-
-const TG_TOKEN = "bot6633326479:AAHRTxH1NmdDcJFzjyTsiu8Ne0bTxmv4Mk0";
-const TG_CHAT_ID = -1001519346981;
-const TG_THREAD_ID = 5220;
 
 function button($link, $text) {
     global $btn_id;
