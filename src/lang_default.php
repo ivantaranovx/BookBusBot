@@ -15,3 +15,6 @@ const STR_SA = "Sat";
 const STR_SU = "Sun";
 const STR_BUS_NAME = "bus name";
 const TAP_TO_BOOKING = "tap to book";
+const STR_PROCESS = "processing...";
+const STR_DONE = "done!!!";
+const STR_BUSY = "seat is busy!!!";

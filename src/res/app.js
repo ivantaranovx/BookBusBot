@@ -1,5 +1,5 @@
 
-/* global buscfg */
+/* global buscfg, STR_DONE, STR_PROCESS, STR_BUSY */
 
 let tg = window.Telegram.WebApp;
 tg.expand();
@@ -483,6 +483,8 @@ function book_stoggle(s) {
     if ((buscfg.driver === s.id) ||
             (buscfg.exclude.indexOf(s.id) >= 0))
         return;
+    var book_label = document.getElementById("book_label");
+    book_label.innerHTML = STR_PROCESS;
     var f = s.onclick;
     s.onclick = null;
     s.innerHTML = "";
@@ -491,8 +493,10 @@ function book_stoggle(s) {
         s.innerHTML = "";
         if (data === "accept")
             s.appendChild(userpic.cloneNode());
+        book_label.innerHTML = STR_DONE;
         if (data.startsWith("busy")) {
             img(s, parseInt(data.substring(5)));
+            book_label.innerHTML = STR_BUSY;
         }
         s.onclick = f;
 

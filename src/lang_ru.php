@@ -15,3 +15,6 @@ const STR_SA = "Сб";
 const STR_SU = "Вс";
 const STR_BUS_NAME = "номер автобуса";
 const TAP_TO_BOOKING = "нажмите для бронирования";
+const STR_PROCESS = "обработка...";
+const STR_DONE = "готово!!!";
+const STR_BUSY = "место занято!!!";

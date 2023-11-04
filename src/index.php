@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<?php
+include "check_routes.php";
+?><!DOCTYPE html>
 <html>
     <head>
         <title>title</title>
@@ -8,9 +10,12 @@
         <script><?php
 readfile("res/app.min.js");
 ?>
-</script><style><?php
+
+    var STR_PROCESS = "<?= STR_PROCESS ?>";
+    var STR_DONE = "<?= STR_DONE ?>";
+    var STR_BUSY = "<?= STR_BUSY ?>";
+        </script><style><?php
 readfile("res/app.min.css");
-include "check_routes.php";
 ?></style>
     </head>
     <body></body>

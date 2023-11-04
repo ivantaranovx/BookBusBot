@@ -31,7 +31,7 @@ if ($buscfg === "") {
 $_SESSION[SESS_BUS_NAME] = $bus_name;
 
 ?><div class='busname'><?= $route_name ?>  @<?= date("j M H:i", $time) ?><br><?= $bus_name ?></div>
-<p><?= TAP_TO_BOOKING ?></p>
+<p id='book_label'><?= TAP_TO_BOOKING ?></p>
 <div class='bus' id='bus'></div>
 <!--# {"buscfg": <?= $buscfg ?>, "pass": [<?= $pass ?>], "run":["drawseats", "draw_pass"]} #-->
 <?php
