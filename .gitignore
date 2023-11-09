@@ -3,3 +3,5 @@
 /src/photo/
 /nbproject/
 /src/private.php
+/src/res/app.min.css
+/src/res/app.min.js

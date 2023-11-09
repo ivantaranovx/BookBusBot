@@ -488,9 +488,9 @@ function book_stoggle(s) {
     get_data("book.php", function (data) {
         s.innerHTML = "";
         s.onclick = f;
+        book_label.innerHTML = vars["STR_DONE"];
         if (data === "accept") {
             s.appendChild(userpic.cloneNode());
-            book_label.innerHTML = vars["STR_DONE"];
         }
         if (data.startsWith("busy")) {
             img(s, parseInt(data.substring(5)));
