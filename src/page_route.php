@@ -60,4 +60,9 @@ get_bus_names(function ($n) {
 <?php
 button(PAGE_DRIVER, STR_BACK);
 ?>
-<!--# {"times": [<?= $times ?>], "day_names": [<?= $days ?>]} #-->
+<!--# {
+"times": [<?= $times ?>],
+"vars": {
+    "day_names": [<?= $days ?>]
+}
+} #-->

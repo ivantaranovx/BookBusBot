@@ -1,6 +1,4 @@
 
-/* global buscfg, STR_DONE, STR_PROCESS, STR_BUSY */
-
 let tg = window.Telegram.WebApp;
 tg.expand();
 
@@ -30,10 +28,9 @@ addEventListener("DOMContentLoaded", (e) => {
 });
 
 let current_page = null;
-let buscfg = null;
-let day_names = null;
-let pass = null;
 let upd_interval = null;
+
+let vars = [];
 
 function page(m, s = null) {
     if (s !== null) {
@@ -58,20 +55,18 @@ function page(m, s = null) {
         var p2 = data.indexOf(" #-->");
         if ((p1 >= 0) && (p2 >= 0)) {
             var obj = JSON.parse(data.substring(p1 + 6, p2));
-            if (typeof obj.buscfg === "object") {
-                buscfg = obj.buscfg;
+            if (typeof obj.vars === "object") {
+                for (const [key, value] of Object.entries(obj.vars)) {
+                    vars[key] = value;
+                }
             }
-            if (typeof obj.pass === "object") {
-                pass = obj.pass;
-            }
-            if (typeof obj.day_names === "object") {
-                day_names = obj.day_names;
-            }
+            
             if (typeof obj.times === "object") {
                 obj.times.forEach((tm) => {
                     timeadd(tm);
                 });
             }
+            
             if (typeof obj.run === "object") {
                 obj.run.forEach(function (fn) {
                     switch (fn) {
@@ -93,7 +88,7 @@ function page(m, s = null) {
                 data = JSON.parse(data);
                 if (typeof data.pass !== "object")
                     return;
-                pass = data.pass;
+                vars["pass"] = data.pass;
                 draw_pass();
             });
         }, 10000);
@@ -101,26 +96,26 @@ function page(m, s = null) {
 }
 
 function drawseats() {
-    if (typeof buscfg !== "object")
+    if (typeof vars["buscfg"] !== "object")
         return;
     let b = document.getElementById("bus");
     if (b === null)
         return;
     b.innerHTML = "";
-    for (let y = 0; y < buscfg.height; y++) {
+    for (let y = 0; y < vars["buscfg"].height; y++) {
         if (y > 0) {
             let s = document.createElement("div");
             s.classList.add("divider");
             b.appendChild(s);
         }
-        for (let x = 0; x < buscfg.width; x++) {
+        for (let x = 0; x < vars["buscfg"].width; x++) {
             let sid = y + ":" + x;
             let s = document.createElement("div");
             s.id = sid;
             s.classList.add("seat");
-            if (buscfg.driver === sid)
+            if (vars["buscfg"].driver === sid)
                 s.classList.add("driver");
-            if (buscfg.exclude.includes(sid))
+            if (vars["buscfg"].exclude.includes(sid))
                 s.classList.add("exclude");
             s.onclick = function () {
                 stoggle(s);
@@ -156,7 +151,7 @@ function sidl() {
 }
 
 function sidr() {
-    return "0:" + (buscfg.width - 1);
+    return "0:" + (vars["buscfg"].width - 1);
 }
 
 var btnl;
@@ -167,8 +162,8 @@ var seatw;
 function seatscfg() {
 
     var b = document.getElementById("bus_name");
-    b.value = buscfg.bus_name;
-    b.readOnly = (buscfg.bus_name !== "");
+    b.value = vars["buscfg"].bus_name;
+    b.readOnly = (vars["buscfg"].bus_name !== "");
 
     /* driver config */
 
@@ -183,13 +178,13 @@ function seatscfg() {
     btnl = document.createElement("div");
     btnl.classList.add("cfgitem");
     btnl.classList.add("drvl");
-    if (buscfg.driver === sidl())
+    if (vars["buscfg"].driver === sidl())
         btnl.classList.add("selected");
 
     btnr = document.createElement("div");
     btnr.classList.add("cfgitem");
     btnr.classList.add("drvr");
-    if (buscfg.driver === sidr())
+    if (vars["buscfg"].driver === sidr())
         btnr.classList.add("selected");
 
     btnl.onclick = function () {
@@ -224,25 +219,25 @@ function seatscfg() {
     btnhm.classList.add("cfgitem");
     btnhm.classList.add("btnm");
     btnhm.onclick = function () {
-        buscfg.height--;
-        if (buscfg.height < 1)
-            buscfg.height = 1;
+        vars["buscfg"].height--;
+        if (vars["buscfg"].height < 1)
+            vars["buscfg"].height = 1;
         drawbus();
     };
     b.appendChild(btnhm);
 
     seath = document.createElement("div");
     seath.classList.add("cfgval");
-    seath.innerHTML = buscfg.height;
+    seath.innerHTML = vars["buscfg"].height;
     b.appendChild(seath);
 
     var btnhp = document.createElement("div");
     btnhp.classList.add("cfgitem");
     btnhp.classList.add("btnp");
     btnhp.onclick = function () {
-        buscfg.height++;
-        if (buscfg.height > 20)
-            buscfg.height = 20;
+        vars["buscfg"].height++;
+        if (vars["buscfg"].height > 20)
+            vars["buscfg"].height = 20;
         drawbus();
     };
     b.appendChild(btnhp);
@@ -258,25 +253,25 @@ function seatscfg() {
     btnwm.classList.add("cfgitem");
     btnwm.classList.add("btnm");
     btnwm.onclick = function () {
-        buscfg.width--;
-        if (buscfg.width < 1)
-            buscfg.width = 1;
+        vars["buscfg"].width--;
+        if (vars["buscfg"].width < 1)
+            vars["buscfg"].width = 1;
         drawbus();
     };
     b.appendChild(btnwm);
 
     seatw = document.createElement("div");
     seatw.classList.add("cfgval");
-    seatw.innerHTML = buscfg.width;
+    seatw.innerHTML = vars["buscfg"].width;
     b.appendChild(seatw);
 
     var btnwp = document.createElement("div");
     btnwp.classList.add("cfgitem");
     btnwp.classList.add("btnp");
     btnwp.onclick = function () {
-        buscfg.width++;
-        if (buscfg.width > 5)
-            buscfg.width = 5;
+        vars["buscfg"].width++;
+        if (vars["buscfg"].width > 5)
+            vars["buscfg"].width = 5;
         drawbus();
     };
     b.appendChild(btnwp);
@@ -311,23 +306,23 @@ function seatscfg() {
 }
 
 function driverseat() {
-    seatw.innerHTML = buscfg.width;
-    seath.innerHTML = buscfg.height;
+    seatw.innerHTML = vars["buscfg"].width;
+    seath.innerHTML = vars["buscfg"].height;
     if (btnl.classList.contains("selected"))
-        buscfg.driver = sidl();
+        vars["buscfg"].driver = sidl();
     if (btnr.classList.contains("selected"))
-        buscfg.driver = sidr();
-    let di = buscfg.exclude.indexOf(buscfg.driver);
+        vars["buscfg"].driver = sidr();
+    let di = vars["buscfg"].exclude.indexOf(vars["buscfg"].driver);
     if (di >= 0)
-        buscfg.exclude.splice(di, 1);
+        vars["buscfg"].exclude.splice(di, 1);
 }
 
 function excludechk() {
-    buscfg.exclude.forEach(function (e, i) {
+    vars["buscfg"].exclude.forEach(function (e, i) {
         let s = e.split(":");
-        if ((parseInt(s[0]) >= buscfg.height)
-                || (parseInt(s[1]) >= buscfg.width))
-            buscfg.exclude.splice(i, 1);
+        if ((parseInt(s[0]) >= vars["buscfg"].height)
+                || (parseInt(s[1]) >= vars["buscfg"].width))
+            vars["buscfg"].exclude.splice(i, 1);
     });
 }
 
@@ -339,11 +334,11 @@ function drawbus() {
 
 function savebus() {
     var n = document.getElementById("bus_name");
-    buscfg.bus_name = n.value;
+    vars["buscfg"].bus_name = n.value;
     var btns = document.getElementById("btn_save");
     btns.classList.add("disabled");
     var btnd = document.getElementById("btn_del");
-    buscfg.delete = btnd.classList.contains("yes");
+    vars["buscfg"].delete = btnd.classList.contains("yes");
     get_data("bus.php", function (data) {
         btns.classList.remove("disabled");
         if (data === "ok")
@@ -351,7 +346,7 @@ function savebus() {
         n.classList.remove("error");
         if (data === "bus_name")
             n.classList.add("error");
-    }, buscfg);
+    }, vars["buscfg"]);
 }
 
 function saveroute() {
@@ -408,7 +403,7 @@ function timeadd(tm = null) {
     d.id = "timeitem";
     var s = document.createElement("select");
     var nd = 0;
-    day_names.forEach((d) => {
+    vars["day_names"].forEach((d) => {
         var o = document.createElement("option");
         o.value = nd++;
         o.innerHTML = d;
@@ -445,14 +440,15 @@ function img(s, id) {
 }
 
 function draw_pass() {
-    for (let y = 0; y < buscfg.height; y++) {
-        for (let x = 0; x < buscfg.width; x++) {
+    for (let y = 0; y < vars["buscfg"].height; y++) {
+        for (let x = 0; x < vars["buscfg"].width; x++) {
             document.getElementById(y + ":" + x).innerHTML = "";
         }
     }
-    pass.forEach(function (s) {
+    vars["pass"].forEach(function (s) {
         img(document.getElementById(s.seat), s.uid);
     });
+    document.getElementById("book_label").innerHTML = vars["TAP_TO_BOOKING"];
 }
 
 function stoggle(s) {
@@ -467,39 +463,42 @@ function stoggle(s) {
 }
 
 function bus_stoggle(s) {
-    if (buscfg.driver === s.id)
+    if (vars["buscfg"].driver === s.id)
         return;
-    let si = buscfg.exclude.indexOf(s.id);
+    let si = vars["buscfg"].exclude.indexOf(s.id);
     if (si < 0) {
         s.classList.add("exclude");
-        buscfg.exclude.push(s.id);
+        vars["buscfg"].exclude.push(s.id);
     } else {
         s.classList.remove("exclude");
-        buscfg.exclude.splice(si, 1);
+        vars["buscfg"].exclude.splice(si, 1);
     }
 }
 
 function book_stoggle(s) {
-    if ((buscfg.driver === s.id) ||
-            (buscfg.exclude.indexOf(s.id) >= 0))
+    if ((vars["buscfg"].driver === s.id) ||
+            (vars["buscfg"].exclude.indexOf(s.id) >= 0))
         return;
     var book_label = document.getElementById("book_label");
-    book_label.innerHTML = STR_PROCESS;
+    book_label.innerHTML = vars["STR_PROCESS"];
     var f = s.onclick;
     s.onclick = null;
     s.innerHTML = "";
     s.appendChild(loader.cloneNode());
     get_data("book.php", function (data) {
         s.innerHTML = "";
-        if (data === "accept")
+        s.onclick = f;
+        if (data === "accept") {
             s.appendChild(userpic.cloneNode());
-        book_label.innerHTML = STR_DONE;
+            book_label.innerHTML = vars["STR_DONE"];
+        }
         if (data.startsWith("busy")) {
             img(s, parseInt(data.substring(5)));
-            book_label.innerHTML = STR_BUSY;
+            book_label.innerHTML = vars["STR_BUSY"];
         }
-        s.onclick = f;
-
+        setTimeout(function () {
+            book_label.innerHTML = vars["TAP_TO_BOOKING"];
+        }, 5000);
     }, {
         sid: s.id
     });

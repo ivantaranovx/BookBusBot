@@ -9,6 +9,7 @@ function delete_done_routes() {
     global $db;
     $ps = $db->prepare("DELETE FROM booking WHERE time<:time");
     $ps->bindValue("time", time(), SQLITE3_INTEGER);
+    $ps->execute();
 }
 
 function is_route_planned($route_name, $time) {

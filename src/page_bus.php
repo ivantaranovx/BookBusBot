@@ -24,5 +24,9 @@ if ($buscfg === "") {
 <?php
 button(PAGE_TRANSPORT, STR_BACK);
 ?>
-<!--# {"buscfg": <?= $buscfg ?>, "run":["drawseats", "seatscfg"]} #-->
-
+<!--# {
+"vars": {
+    "buscfg": <?= $buscfg ?>
+},
+"run":["drawseats", "seatscfg"]
+} #-->
