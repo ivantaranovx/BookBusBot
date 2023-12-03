@@ -7,34 +7,71 @@ if ($uid < 1) {
     goto err;
 }
 
-$nn = filter_input(INPUT_GET, "nn", FILTER_SANITIZE_SPECIAL_CHARS);
-if ($nn) {
+if (isset($_GET["first_name"])) {
     $_SESSION[SESS_UID] = $uid;
-    if (!preg_match(REG_NN, $nn)) {
-        $nn = "??";
-    }
+    $_SESSION[SESS_FIRST_NAME] = filter_input(INPUT_GET, "first_name", FILTER_SANITIZE_SPECIAL_CHARS);
+    $_SESSION[SESS_LAST_NAME] = filter_input(INPUT_GET, "last_name", FILTER_SANITIZE_SPECIAL_CHARS);
+    $_SESSION[SESS_USERNAME] = filter_input(INPUT_GET, "username", FILTER_SANITIZE_SPECIAL_CHARS);
+    $_SESSION[SESS_PHOTO_URL] = filter_input(INPUT_GET, "photo_url", FILTER_SANITIZE_SPECIAL_CHARS);
+
+    $myfile = fopen(PHOTO . $_SESSION[SESS_UID] . ".txt", "w");
+    fwrite($myfile, "first_name:" . $_SESSION[SESS_FIRST_NAME] . "\n");
+    fwrite($myfile, "last_name:" . $_SESSION[SESS_LAST_NAME] . "\n");
+    fwrite($myfile, "username:" . $_SESSION[SESS_USERNAME] . "\n");
+    fwrite($myfile, "photo_url:" . $_SESSION[SESS_PHOTO_URL] . "\n");
+    fclose($myfile);
 }
 
-function create_nnimg($nn, $img_fn) {
-    $font = "res/OpenSans-Bold.ttf";
+function get_char($str) {
+    $chars = mb_str_split($str);
+    if (count($chars) == 0)
+        return "";
+    for ($i = 0; $i < count($chars); $i++) {
+        if (strlen($chars[$i]) == 1)
+            return $chars[$i];
+    }
+    return ":)";
+}
+
+function get_short_name() {
+    $n1 = get_char($_SESSION[SESS_FIRST_NAME]);
+    $n2 = get_char($_SESSION[SESS_LAST_NAME]);
+    $n3 = get_char($_SESSION[SESS_USERNAME]);
+    if ((strlen($n1) == 1) && (strlen($n2) == 1)) {
+        return strtoupper($n1) . strtoupper($n2);
+    }
+    if (strlen($n1) == 1) {
+        return strtoupper($n1);
+    }
+    if (strlen($n2) == 1) {
+        return strtoupper($n2);
+    }
+    if (strlen($n3) == 1) {
+        return strtoupper($n3);
+    }
+    return ":)";
+}
+
+function create_name_img($img_fn) {
+    $img_name = get_short_name();
+    $font = "res/NotoSansDisplay-Bold.ttf";
     $font_size = 22;
     $img = imagecreatetruecolor(64, 64);
     imagealphablending($img, false);
     imagefill($img, 0, 0, imagecolorallocatealpha($img, 0, 0, 0, 127));
     imagesavealpha($img, true);
-    $black = imagecolorallocate($img, 0, 0, 0);
     include "hsl2rgb.php";
     $h = rand(0, 360);
     $s = rand(70, 90);
     $l = rand(60, 70);
     $rgb = hsl2rgb($h, $s / 100, $l / 100);
     imagefilledellipse($img, 32, 32, 64, 64, imagecolorallocate($img, $rgb[0], $rgb[1], $rgb[2]));
-    $text_box = imagettfbbox($font_size, 0, $font, $nn);
+    $text_box = imagettfbbox($font_size, 0, $font, $img_name);
     $text_width = $text_box[2] - $text_box[0];
     $text_height = $text_box[7] - $text_box[1];
     $x = (32) - ($text_width / 2);
     $y = (32) - ($text_height / 2);
-    imagettftext($img, $font_size, 0, $x, $y, $black, $font, $nn);
+    imagettftext($img, $font_size, 0, $x, $y, imagecolorallocate($img, 0, 0, 0), $font, $img_name);
     imagepng($img, $img_fn);
 }
 
@@ -56,7 +93,7 @@ if ($photos->ok != "ok") {
 }
 
 if ($photos->result->total_count < 1) { // no photo
-    create_nnimg(strtoupper($nn), $img_out);
+    create_name_img($img_out);
     goto out;
 }
 

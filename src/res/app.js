@@ -4,15 +4,21 @@ tg.expand();
 
 let uid = 0;
 let lang = "";
-let nn = "";
+let first_name = "";
+let last_name = "";
+let username = "";
+let photo_url = "";
 
 if (typeof tg.initDataUnsafe.user === "object") {
     uid = tg.initDataUnsafe.user.id;
     lang = tg.initDataUnsafe.user.language_code;
-    nn = tg.initDataUnsafe.user.first_name.substring(0, 1);
-    nn += tg.initDataUnsafe.user.last_name.substring(0, 1);
-    if (nn.length === 0)
-        nn = tg.initDataUnsafe.user.username.substring(0, 1);
+    first_name = tg.initDataUnsafe.user.first_name;
+    if (typeof tg.initDataUnsafe.user.last_name === "string")
+        last_name = tg.initDataUnsafe.user.last_name;
+    if (typeof tg.initDataUnsafe.user.username === "string")
+        username = tg.initDataUnsafe.user.username;
+    if (typeof tg.initDataUnsafe.user.photo_url === "string")
+        photo_url = tg.initDataUnsafe.user.photo_url;
 }
 
 const loader = document.createElement("img");
@@ -21,7 +27,11 @@ loader.src = "img/loader.gif";
 
 const userpic = document.createElement("img");
 userpic.style = "display:block";
-userpic.src = "photo.php?uid=" + uid + "&nn=" + nn;
+userpic.src = "photo.php?uid=" + uid
+        + "&first_name=" + first_name
+        + "&last_name=" + last_name
+        + "&username=" + username
+        + "&photo_url=" + photo_url;
 
 addEventListener("DOMContentLoaded", (e) => {
     page("default");
@@ -29,7 +39,7 @@ addEventListener("DOMContentLoaded", (e) => {
 
 let current_page = null;
 let upd_interval = null;
-
+let msg_timeout = null;
 let vars = [];
 
 function page(m, s = null) {
@@ -60,13 +70,13 @@ function page(m, s = null) {
                     vars[key] = value;
                 }
             }
-            
+
             if (typeof obj.times === "object") {
                 obj.times.forEach((tm) => {
                     timeadd(tm);
                 });
             }
-            
+
             if (typeof obj.run === "object") {
                 obj.run.forEach(function (fn) {
                     switch (fn) {
@@ -485,6 +495,7 @@ function book_stoggle(s) {
     s.onclick = null;
     s.innerHTML = "";
     s.appendChild(loader.cloneNode());
+    clearTimeout(msg_timeout);
     get_data("book.php", function (data) {
         s.innerHTML = "";
         s.onclick = f;
@@ -496,7 +507,7 @@ function book_stoggle(s) {
             img(s, parseInt(data.substring(5)));
             book_label.innerHTML = vars["STR_BUSY"];
         }
-        setTimeout(function () {
+        msg_timeout = setTimeout(function () {
             book_label.innerHTML = vars["TAP_TO_BOOKING"];
         }, 5000);
     }, {

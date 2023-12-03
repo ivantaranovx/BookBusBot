@@ -39,6 +39,11 @@ const SESS_TIME = "time";
 const SESS_CHK = "chk";
 const SESS_DRIVER = "driver";
 
+const SESS_FIRST_NAME = "first_name";
+const SESS_LAST_NAME = "last_name";
+const SESS_USERNAME = "username";
+const SESS_PHOTO_URL = "photo_url";
+
 function button($link, $text) {
     global $btn_id;
     if (!isset($btn_id)) {
